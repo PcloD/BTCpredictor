@@ -2,6 +2,12 @@
 
 predicting bitcoin prices using bayesian regression techniques
 
+[![Build Status](https://travis-ci.org/owocki/pytrader.svg?branch=master)]
+
+## Update August 8th 2017
+
+Due to the expiration of the Matlab 2016b license that was used for implementing this MatLab code, efforts to reimplement it in Python are being made.
+
 ## Update June 15th 2017
 I've spoken to a few people who are running servers to collect price data over time, and several them have had their servers crash from running out of memory. If you're doing something similar, either make sure you buy enough memory, or save the data regularly to persistant storage.
 
