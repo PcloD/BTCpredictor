@@ -19,7 +19,7 @@ function dpj = bayesian(x, S)
     # iterate through all kmeanspatterns 
     for i = 1:20
         cutS = S(i,1:length(x));
-        distance = exp(c*(norm(x-cutS,2)^2));
+        distance = exp(c*(norm(x - cutS,2)^2));
         num = num + S(i,length(x)+1)*distance;
         den = den + distance;    
     end
