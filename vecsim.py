@@ -1,17 +1,19 @@
-#find the similarity between two vectors
+#find the similarity between two vectors "x" and "y"
 
-function s = vecsim(x,y)
+import math
+import numpy as np
+
+def vecsim(x, y):
     
-    assert(length(x)==length(y),'these vectors are different lengths!');
-    assert(~isempty(x),'need a larger vector');
+    assert len(x) == len(y), "these vectors are different lengths!"
+    assert ~isempty(x), "need a larger vector"
     
-    num = sum((x - mean(x)).*(y-mean(y)));
-    den = length(x)*std(x)*std(y);
+    num = np.sum((x - np.mean(x)).*(y - np.mean(y)))
+    den = len(x) * np.std(x) * np.std(y)
     
-    if (den == 0)
-       s = num; #to account for if either vector has std=0          
-    else
-       s = (num/den);
-    end
+    if (den == 0):
+       s = num     #to account for if either vector has std=0
+       else:
+       s = (num/den)
     
-end
+    return s
