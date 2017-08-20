@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 '''
 Function:         step(FVr_x)
 Author:           Rainer Storn, Mathew McAteer (Python Implementation)

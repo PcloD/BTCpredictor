@@ -1,6 +1,8 @@
-# 求样本熵 author by YangSong 2010.11.16 C230
-# Python Implementation by Matthew McAteer
-
+# -*- coding: utf-8 -*-
+'''
+求样本熵 author by YangSong 2010.11.16 C230
+Python Implementation by Matthew McAteer
+'''
 import math
 import numpy as np
 

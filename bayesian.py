@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+'''
 to calculate the expected price change dp_j based on a given x, where
 x is the vector of current empirical prices, ending in our current price
 
@@ -10,8 +10,7 @@ x_i is a given pattern
 y_i is the price change for the kmeans pattern
 c is a constant chosen for best fit
 defined in the paper
-
-"""
+'''
 
 def bayesian(x, S):
     # based on the length of x, we choose S_j

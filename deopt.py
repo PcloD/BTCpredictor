@@ -78,70 +78,71 @@
 # General Public License can be obtained from the 
 # Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 '''
+import numpy as np
 
 def deopt(fname, S_struct):
 
   #-----This is just for notational convenience and to keep the code uncluttered.--------
-  I_NP = S_struct.I_NP;
-  F_weight = S_struct.F_weight;
-  F_CR = S_struct.F_CR;
-  I_D = S_struct.I_D;
-  FVr_minbound = S_struct.FVr_minbound;
-  FVr_maxbound = S_struct.FVr_maxbound;
-  I_bnd_constr = S_struct.I_bnd_constr;
-  I_itermax = S_struct.I_itermax;
-  F_VTR = S_struct.F_VTR;
-  I_strategy = S_struct.I_strategy;
-  I_refresh = S_struct.I_refresh;
-  I_plotting = S_struct.I_plotting;
+  I_NP = S_struct.I_NP
+  F_weight = S_struct.F_weight
+  F_CR = S_struct.F_CR
+  I_D = S_struct.I_D
+  FVr_minbound = S_struct.FVr_minbound
+  FVr_maxbound = S_struct.FVr_maxbound
+  I_bnd_constr = S_struct.I_bnd_constr
+  I_itermax = S_struct.I_itermax
+  F_VTR = S_struct.F_VTR
+  I_strategy = S_struct.I_strategy
+  I_refresh = S_struct.I_refresh
+  I_plotting = S_struct.I_plotting
 
   #-----Check input variables---------------------------------------------
   if (I_NP < 5)
-     I_NP = 5;
-     fprintf(1,' I_NP increased to minimal value 5\n');
+     I_NP = 5
+     fprintf(1,' I_NP increased to minimal value 5\n')
 
   if ((F_CR < 0) | (F_CR > 1))
-     F_CR=0.5;
-     fprintf(1,'F_CR should be from interval [0,1]; set to default value 0.5\n');
+     F_CR=0.5
+     fprintf(1,'F_CR should be from interval [0,1]; set to default value 0.5\n')
 
   if (I_itermax <= 0)
-     I_itermax = 200;
-     fprintf(1,'I_itermax should be > 0; set to default value 200\n');
+     I_itermax = 200
+     fprintf(1,'I_itermax should be > 0; set to default value 200\n')
 
-  I_refresh = floor(I_refresh);
+  I_refresh = floor(I_refresh)
 
   #-----Initialize population and some arrays-------------------------------
-  FM_pop = np.zeros(I_NP,I_D); %initialize FM_pop to gain speed
+  FM_pop = np.zeros(I_NP,I_D)      #initialize FM_pop to gain speed
 
   #----FM_pop is a matrix of size I_NPx(I_D+1). It will be initialized------
   #----with random values between the min and max values of the-------------
   #----parameters-----------------------------------------------------------
 
-  for k=1:I_NP
-     FM_pop(k,:) = FVr_minbound + rand(1,I_D).*(FVr_maxbound - FVr_minbound);
+  for k in range(1,I_NP):
+     FM_pop[k,:] = FVr_minbound + rand(1,I_D).*(FVr_maxbound - FVr_minbound)
   end
 
-  FM_popold     = zeros(size(FM_pop));  # toggle population
-  FVr_bestmem   = zeros(1,I_D);# best population member ever
-  FVr_bestmemit = zeros(1,I_D);# best population member in iteration
-  I_nfeval      = 0;                    # number of function evaluations
+  FM_popold = np.zeros(size(FM_pop))       # toggle population
+  FVr_bestmem = np.zeros(1, I_D)              # best population member ever
+  FVr_bestmemit = np.zeros(1, I_D)              # best population member in iteration
+  I_nfeval = 0                        # number of function evaluations
 
   #------Evaluate the best member after initialization----------------------
 
-  I_best_index   = 1;                   #% start with first population member
-  S_val[1]       = feval(fname,FM_pop(I_best_index,:),S_struct);
+  I_best_index = 1                   #% start with first population member
+  S_val[1] = feval(fname, FM_pop[I_best_index,:], S_struct)
 
   S_bestval = S_val[1]                 # best objective function value so far
-  I_nfeval  = I_nfeval + 1;
-  for k=2:I_NP                          # check the remaining members
-    S_val(k)  = feval(fname,FM_pop(k,:),S_struct);
-    I_nfeval  = I_nfeval + 1;
-    if (left_win(S_val(k),S_bestval) == 1)
-      I_best_index   = k;              # save its location
-      S_bestval      = S_val(k);
+  I_nfeval = I_nfeval + 1
+  for k in range(2,I_NP):                         # check the remaining members
+    S_val[k] = feval(fname,FM_pop(k,:), S_struct)
+    I_nfeval = I_nfeval + 1
+    if (left_win(S_val(k),S_bestval) == 1):
+      I_best_index = k              # save its location
+      S_bestval = S_val[k]
     end   
   end
-  FVr_bestmemit = FM_pop(I_best_index,:); # best member of current iteration
+  FVr_bestmemit = FM_pop(I_best_index,:) # best member of current iteration
   S_bestvalit   = S_bestval;              # best value of current iteration
 
   FVr_bestmem = FVr_bestmemit;            # best member ever
@@ -151,68 +152,67 @@ def deopt(fname, S_struct):
   #------static through one iteration. FM_pop is the newly--------------
   #------emerging population.----------------------------------------
 
-  FM_pm1 = zeros(I_NP,I_D);   # initialize population matrix 1
-  FM_pm2 = zeros(I_NP,I_D);   # initialize population matrix 2
-  FM_pm3 = zeros(I_NP,I_D);   # initialize population matrix 3
-  FM_pm4 = zeros(I_NP,I_D);   # initialize population matrix 4
-  FM_pm5 = zeros(I_NP,I_D);   # initialize population matrix 5
-  FM_bm = zeros(I_NP,I_D);   # initialize FVr_bestmember  matrix
-  FM_ui = zeros(I_NP,I_D);   # intermediate population of perturbed vectors
-  FM_mui = zeros(I_NP,I_D);   # mask for intermediate population
-  FM_mpo = zeros(I_NP,I_D);   # mask for old population
-  FVr_rot = (0:1:I_NP-1);               # rotating index array (size I_NP)
-  FVr_rotd = (0:1:I_D-1);       # rotating index array (size I_D)
-  FVr_rt = zeros(I_NP);                # another rotating index array
-  FVr_rtd = zeros(I_D);                 # rotating index array for exponential crossover
-  FVr_a1 = zeros(I_NP);                # index array
-  FVr_a2 = zeros(I_NP);                # index array
-  FVr_a3 = zeros(I_NP);                # index array
-  FVr_a4 = zeros(I_NP);                # index array
-  FVr_a5 = zeros(I_NP);                # index array
-  FVr_ind = zeros(4);
+  FM_pm1 = np.zeros(I_NP,I_D)   # initialize population matrix 1
+  FM_pm2 = np.zeros(I_NP,I_D)   # initialize population matrix 2
+  FM_pm3 = np.zeros(I_NP,I_D)   # initialize population matrix 3
+  FM_pm4 = np.zeros(I_NP,I_D)   # initialize population matrix 4
+  FM_pm5 = np.zeros(I_NP,I_D)   # initialize population matrix 5
+  FM_bm = np.zeros(I_NP,I_D)   # initialize FVr_bestmember  matrix
+  FM_ui = np.zeros(I_NP,I_D)   # intermediate population of perturbed vectors
+  FM_mui = np.zeros(I_NP,I_D)   # mask for intermediate population
+  FM_mpo = np.zeros(I_NP,I_D)   # mask for old population
+  FVr_rot = [0:1:I_NP-1]               # rotating index array (size I_NP)
+  FVr_rotd = [0:1:I_D-1]       # rotating index array (size I_D)
+  FVr_rt = np.zeros(I_NP)                # another rotating index array
+  FVr_rtd = np.zeros(I_D)                 # rotating index array for exponential crossover
+  FVr_a1 = np.zeros(I_NP)                # index array
+  FVr_a2 = np.zeros(I_NP)                # index array
+  FVr_a3 = np.zeros(I_NP)                # index array
+  FVr_a4 = np.zeros(I_NP)                # index array
+  FVr_a5 = np.zeros(I_NP)                # index array
+  FVr_ind = np.zeros(4)
 
-  FM_meanv = ones(I_NP,I_D);
+  FM_meanv = np.ones[I_NP, I_D]
 
-  I_iter = 1;
-  while ((I_iter < I_itermax) & (S_bestval.FVr_oa(1) > F_VTR))
-    FM_popold = FM_pop;                  # save the old population
-    S_struct.FM_pop = FM_pop;
-    S_struct.FVr_bestmem = FVr_bestmem;
+  I_iter = 1
+  while ((I_iter < I_itermax) & (S_bestval.FVr_oa(1) > F_VTR)):
+    FM_popold = FM_pop                  # save the old population
+    S_struct.FM_pop = FM_pop
+    S_struct.FVr_bestmem = FVr_bestmem
     
-    FVr_ind = randperm(4);               # index pointer array
+    FVr_ind = randperm(4)               # index pointer array
 
-    FVr_a1  = randperm(I_NP);                   # shuffle locations of vectors
-    FVr_rt  = rem(FVr_rot+FVr_ind(1),I_NP);     # rotate indices by ind(1) positions
-    FVr_a2  = FVr_a1(FVr_rt+1);                 # rotate vector locations
-    FVr_rt  = rem(FVr_rot+FVr_ind(2),I_NP);
-    FVr_a3  = FVr_a2(FVr_rt+1);                
-    FVr_rt  = rem(FVr_rot+FVr_ind(3),I_NP);
-    FVr_a4  = FVr_a3(FVr_rt+1);               
-    FVr_rt  = rem(FVr_rot+FVr_ind(4),I_NP);
-    FVr_a5  = FVr_a4(FVr_rt+1);                
+    FVr_a1 = randperm(I_NP)                   # shuffle locations of vectors
+    FVr_rt = rem(FVr_rot+FVr_ind(1),I_NP)     # rotate indices by ind(1) positions
+    FVr_a2 = FVr_a1(FVr_rt+1)                 # rotate vector locations
+    FVr_rt = rem(FVr_rot+FVr_ind(2),I_NP)
+    FVr_a3 = FVr_a2(FVr_rt+1)                
+    FVr_rt = rem(FVr_rot+FVr_ind(3),I_NP)
+    FVr_a4 = FVr_a3(FVr_rt+1)               
+    FVr_rt = rem(FVr_rot+FVr_ind(4),I_NP)
+    FVr_a5 = FVr_a4(FVr_rt+1)                
 
-    FM_pm1 = FM_popold(FVr_a1,:);             # shuffled population 1
-    FM_pm2 = FM_popold(FVr_a2,:);             # shuffled population 2
-    FM_pm3 = FM_popold(FVr_a3,:);             # shuffled population 3
-    FM_pm4 = FM_popold(FVr_a4,:);             # shuffled population 4
-    FM_pm5 = FM_popold(FVr_a5,:);             # shuffled population 5
+    FM_pm1 = FM_popold(FVr_a1,:)             # shuffled population 1
+    FM_pm2 = FM_popold(FVr_a2,:)             # shuffled population 2
+    FM_pm3 = FM_popold(FVr_a3,:)             # shuffled population 3
+    FM_pm4 = FM_popold(FVr_a4,:)             # shuffled population 4
+    FM_pm5 = FM_popold(FVr_a5,:)             # shuffled population 5
 
-    for k=1:I_NP                              # population filled with the best member
-      FM_bm(k,:) = FVr_bestmemit;             # of the last iteration
-    end
+    for k in range(1,I_NP):                  # population filled with the best member
+      FM_bm(k,:) = FVr_bestmemit             # of the last iteration
 
-    FM_mui = rand(I_NP,I_D) < F_CR;  # all random numbers < F_CR are 1, 0 otherwise
+    FM_mui = rand(I_NP,I_D) < F_CR            # all random numbers < F_CR are 1, 0 otherwise
     
     #----Insert this if you want exponential crossover.----------------
-    #FM_mui = sort(FM_mui');	  # transpose, collect 1's in each column
-    #for k  = 1:I_NP
-    #  n = floor(rand*I_D);
+    #FM_mui = sort(FM_mui')	  # transpose, collect 1's in each column
+    #for k in range (1,I_NP):
+    #  n = floor(rand*I_D)
     #  if (n > 0)
-    #     FVr_rtd     = rem(FVr_rotd+n,I_D);
-    #     FM_mui(:,k) = FM_mui(FVr_rtd+1,k); %rotate column k by n
+    #     FVr_rtd = rem(FVr_rotd+n,I_D)
+    #     FM_mui(:,k) = FM_mui(FVr_rtd+1,k) # rotate column k by n
     #  end
     #end
-    #FM_mui = FM_mui';			  # transpose back
+    #FM_mui = FM_mui'			  # transpose back
     #----End: exponential crossover------------------------------------
   
     FM_mpo = FM_mui < 0.5    # inverse mask to FM_mui
@@ -255,55 +255,55 @@ def deopt(fname, S_struct):
   #-----Optional parent+child selection-----------------------------------------
     
   #-----Select which vectors are allowed to enter the new population------------
-    for k=1:I_NP
+    for k in range (1, I_NP):
      
       #=====Only use this if boundary constraints are needed==================
-      if (I_bnd_constr == 1)
-        for j=1:I_D %----boundary constraints via bounce back-------
-          if (FM_ui(k,j) > FVr_maxbound(j))
-            FM_ui(k,j) = FVr_maxbound(j) + rand*(FM_origin(k,j) - FVr_maxbound(j));
+      if (I_bnd_constr == 1):
+        for j in range(1, I_D): #----boundary constraints via bounce back-------
+          if (FM_ui(k,j) > FVr_maxbound(j)):
+            FM_ui(k,j) = FVr_maxbound(j) + rand*(FM_origin(k,j) - FVr_maxbound(j))
           end
-          if (FM_ui(k,j) < FVr_minbound(j))
-            FM_ui(k,j) = FVr_minbound(j) + rand*(FM_origin(k,j) - FVr_minbound(j));
+          if (FM_ui(k,j) < FVr_minbound(j)):
+            FM_ui(k,j) = FVr_minbound(j) + rand*(FM_origin(k,j) - FVr_minbound(j))
           end   
         end
       end
       #=====End boundary constraints==========================================
   
-      S_tempval = feval(fname,FM_ui(k,:),S_struct);   # check cost of competitor
-      I_nfeval  = I_nfeval + 1;
+      S_tempval = feval(fname,FM_ui(k,:),S_struct)   # check cost of competitor
+      I_nfeval  = I_nfeval + 1
       if (left_win(S_tempval,S_val(k)) == 1)   
-        FM_pop(k,:) = FM_ui(k,:);                    # replace old vector with new one (for new iteration)
-        S_val(k)   = S_tempval;                      # save value in "cost array"
+        FM_pop(k,:) = FM_ui(k,:)                    # replace old vector with new one (for new iteration)
+        S_val(k)   = S_tempval                      # save value in "cost array"
       
         #----we update S_bestval only in case of success to save time-----------
         if (left_win(S_tempval,S_bestval) == 1)   
-          S_bestval = S_tempval;                    # new best value
-          FVr_bestmem = FM_ui(k,:);                 # new best parameter vector ever
+          S_bestval = S_tempval                    # new best value
+          FVr_bestmem = FM_ui(k,:)                 # new best parameter vector ever
         end
       end
-    end # for k = 1:NP
+    end # for k in range (1, I_NP):
 
-    FVr_bestmemit = FVr_bestmem;       # freeze the best member of this iteration for the coming 
+    FVr_bestmemit = FVr_bestmem       # freeze the best member of this iteration for the coming 
                                      # iteration. This is needed for some of the strategies.
 
 #----Output section----------------------------------------------------------
 
     if (I_refresh > 0)
        if ((rem(I_iter,I_refresh) == 0) | I_iter == 1)
-         fprintf(1,'Iteration: %d,  Best: %f,  F_weight: %f,  F_CR: %f,  I_NP: %d\n',I_iter,S_bestval.FVr_oa(1),F_weight,F_CR,I_NP);
+         fprintf(1,'Iteration: %d,  Best: %f,  F_weight: %f,  F_CR: %f,  I_NP: %d\n',I_iter,S_bestval.FVr_oa(1),F_weight,F_CR,I_NP)
          #var(FM_pop)
-         format long e;
-         for n=1:I_D
-            fprintf(1,'best(%d) = %g\n',n,FVr_bestmem(n));
+         format long e
+         for n in range(1, I_D):
+            fprintf(1,'best(%d) = %g\n',n,FVr_bestmem(n))
          end
-         if (I_plotting == 1)
+         if (I_plotting == 1):
             PlotIt(FVr_bestmem,I_iter,S_struct); 
          end
       end
     end
 
-    I_iter = I_iter + 1;
+    I_iter = I_iter + 1
 
 
   end #---end while ((I_iter < I_itermax) ...

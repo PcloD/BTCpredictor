@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import math
 
@@ -15,16 +17,16 @@ def myfunc(x,r):
       t = len(r)
     mu = x[1]
     omega = x[2]
-    alpha = x[3];
-    alphaj = x[4];
-    alphaa = x[5];
-    alphaaj = x[6];
-    beta = x[7];
-    lamda0 = x[8];
-    rho = x[9];
-    gama = x[10];
-    theta = x[11];
-    delta = x[12];
+    alpha = x[3]
+    alphaj = x[4]
+    alphaa = x[5]
+    alphaaj = x[6]
+    beta = x[7]
+    lamda0 = x[8]
+    rho = x[9]
+    gama = x[10]
+    theta = x[11]
+    delta = x[12]
 
   sigma = np.zeros(t, 1)
   lamda = np.zeros(t, 1)
@@ -32,7 +34,7 @@ def myfunc(x,r):
   abxlong = np.zeros(t, 1)
   g = np.zeros(t, 1)
   xp = 20
-  # proba = np.zeros(t,1);
+  # proba = np.zeros(t,1)
   p = np.zeros(t, xp + 1)
 
   for i in range(1,t)
@@ -49,7 +51,7 @@ def myfunc(x,r):
         end
         abxlong[i] = E - lamda[i-1]
         if(r(i-1)-mu<0):
-          g[i]=exp(alpha + alphaj * E + alphaa + alphaaj * E)
+          g[i] = exp(alpha + alphaj * E + alphaa + alphaaj * E)
           else:
             g[i] = exp(alpha + alphaj * E)
     
@@ -57,8 +59,8 @@ def myfunc(x,r):
       lamda[i] = lamda0 / (1 - rho)
       sigma[i] = omega
       else:
-        lamda[i] = lamda0 + rho * lamda[i-1] + gama * abxlong[i];
-        sigma[i] = omega + g[i] * ((r[i-1] - mu) ** 2) + beta * sigma[i - 1];   
+        lamda[i] = lamda0 + rho * lamda[i-1] + gama * abxlong[i]
+        sigma[i] = omega + g[i] * ((r[i-1] - mu) ** 2) + beta * sigma[i - 1]   
     
     sums = 0
 

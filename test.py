@@ -1,4 +1,7 @@
-# testing on new December 2016 price data
+# -*- coding: utf-8 -*-
+'''
+Testing on August 2017 price data
+'''
 
 import csv
 import numpy as np
