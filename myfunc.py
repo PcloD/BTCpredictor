@@ -4,12 +4,12 @@ import numpy as np
 import math
 
 def myfunc(x,r):
-  g1 = x(8)
-  g2 = x(9) - x(10)
-  g3 = x(10)
-  g4=x(7);
-  g5=x(9);
-  g6=x(2);
+  g1 = x[8]
+  g2 = x[9] - x(10)
+  g3 = x[10]
+  g4 = x[7]
+  g5 = x[9]
+  g6 = x[2]
 
   if(g1 <= 0 || g2 < 0 || g3 < 0 || g4 < 0 || g5 >= 1 || g6 < 0):
     f = 10000

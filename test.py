@@ -15,7 +15,7 @@ prices = prices[1:2:len(prices)]
 askVolume = askVolume[1:2:end]
 bidVolume = bidVolume[1:2:end]
 
-# estimate transaction fee at %1
+# estimate transaction fee at 1%
 [error, jinzhi, bank, buy, sell, proba] = brtrade(prices, bidVolume, askVolume, 1)
 
 # set up plots

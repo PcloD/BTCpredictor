@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-
 '''
-# Function:         S_MSE= objfun(FVr_temp, S_struct)
-# Author:           Rainer Storn
-# Description:      Implements the cost function to be minimized.
+Function: S_MSE= objfun(FVr_temp, S_struct)
+Author: Rainer Storn
+Description: Implements the cost function to be minimized.
 # Parameters:       FVr_temp     (I)    Paramter vector
 #                   S_Struct     (I)    Contains a variety of parameters.
 #                                       For details see Rundeopt.m
@@ -13,7 +12,6 @@
 #                                       to a particular constraint.
 #                   S_MSE.I_no   (O)    Number of objectives.
 #                   S_MSE.FVr_oa (O)    Objective function values.
-# Worth investigating https://docs.scipy.org/doc/numpy-dev/user/numpy-for-matlab-users.html
 '''
 import numpy as np
 
