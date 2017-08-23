@@ -23,7 +23,7 @@ def left_win(S_x, S_y):
   if (S_x.I_nc > 0):
     for k in range(1, S_x.I_nc):
       if (S_x.FVr_ca[k] > 0):               # if constraint is not yet met
-        if (S_x.FVr_ca[k] > S_y.FVr_ca(k)): # if just one constraint of S_x is not improved
+        if (S_x.FVr_ca[k] > S_y.FVr_ca[k]): # if just one constraint of S_x is not improved
           I_z = 0
 
 
@@ -32,5 +32,5 @@ def left_win(S_x, S_y):
       if (S_x.FVr_oa[k] > S_y.FVr_oa[k]):   # if just one objective of S_x is less
         I_z = 0
 
-        # ISSUE: Figure out what these loops are supposed to return
+  return I_z
  

@@ -12,23 +12,27 @@ c is a constant chosen for best fit
 defined in the paper
 '''
 
+import math
+import numpy as np
+
 def bayesian(x, S):
     # based on the length of x, we choose S_j
-    dpj = 0;
-    c = -1/4; # TODO choose a better c, should it be negative or not??
+    dpj = 0
+
+    c = -1/4 # TODO choose a better c, should it be negative or not??
     # compare x with the it in S using our similarity measure
     # and return the conditional expectation, which is dp
-    num = 0.0;
-    den = 0.0;
+    num = 0.0
+    den = 0.0
 
     for i in range(20):
-        cutS = S(i, 1:len(x));
-        distance = exp(c * (norm(x - cutS, 2) ** 2))
+        cutS = S[i, (1:len(x))]
+        distance = math.exp(c * (np.linalg.norm(x - cutS, 2) ** 2))
         num = num + S[i, len(x)+1] * distance
         den = den + distance
 
 
-    if den~=0:
+    if den != 0:
         dpj = num/den
     
     return dpj

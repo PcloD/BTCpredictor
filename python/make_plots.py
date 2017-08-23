@@ -20,6 +20,8 @@ def make_plots(prices, buy, sell, proba, bank, error):
 
 	# create plots of buy/sell points
 	# note: cannot plot when running on -nojvm flag
+	# http://mathesaurus.sourceforge.net/matlab-python-xref.pdf
+
 	plt.figure(1)
 	plt.plot(1:n,prices,'blue')                          # ISSUE: Still need to figure out Matlab to python syntax conversion
 	plt.plot(1:n,sbuy,'.red' ,'MarkerSize',20)           # ISSUE: Still need to figure out Matlab to python syntax conversion
